@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BABFT Circle Creator</title>
+
+	<link rel="stylesheet" href="style.css">
+	<script type="module" src="main.js"></script>
+</head>
+<body>
+	<div class="sidemenu">
+		<button class="sidemenu-close" onclick="this.parentElement.classList.toggle('closed');">Toggle</button>
+		<div class="section-content">
+			<label>
+				<input type="checkbox" id="hide-wireframe"> Hide Wireframe
+			</label><br>
+			<label>
+				<input type="checkbox" id="hide-blocks"> Hide blocks
+			</label>
+		</div>
+		<div class="section-content">
+			<label class="field-input">
+				Block length: <input type="number" id="block-length" value="10">
+			</label>
+			<label class="field-input">
+				Block Count: <input type="number" id="smoothness" value="6">
+			</label>
+			<label class="field-input">
+				Angle: <input type="number" id="angle" value="30">
+			</label>
+			<label class="field-input">
+				block width: <input type="number" id="block-width">
+			</label><br>
+			<span id="errors">No Errors.</span>
+		</div>
+		<div style="flex-grow: 1;"></div>
+		<div class="section-content">
+			Made by <a href="https://ameerdotexe.github.io">Ameer!</a><br>
+			Inspired by <a href="https://www.youtube.com/@NaserKiswani_Subscribe">Naser Kiswani</a>
+		</div>
+	</div>
+</body>
+</html>
