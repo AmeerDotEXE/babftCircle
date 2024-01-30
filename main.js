@@ -1,6 +1,9 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { OrbitControls } from './OrbitControls.js';
 
+//i just wanted to finish this quickly,
+//so it won't have the best code but fast and functional
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
@@ -12,7 +15,7 @@ const controls = new OrbitControls( camera, renderer.domElement );
 let showWireframe = true;
 let showblocks = true;
 let makeItSphere = false;
-let roundNumbers = false;
+let roundNumbers = true;
 
 let blockLength = 10;
 let blockSegments = 12;
@@ -22,6 +25,10 @@ let blockCountInput = document.querySelector("#smoothness");
 let angleInput = document.querySelector("#angle");
 let blockWidthInput = document.querySelector("#block-width");
 let errorText = document.querySelector("#errors");
+let totalBlocks = document.querySelector("#total-blocks");
+let currentBlockWidth = document.querySelector("#current-block-width");
+let scaleDirection = document.querySelector("#scale-sides-direction");
+let scaleDirectionLength = document.querySelector("#scale-sides");
 setupListeners();
 
 
@@ -48,7 +55,7 @@ function setupListeners() {
 	blockLengthInput?.addEventListener("input", (event) => {
 		let inputElement = event.target;
 		if (inputElement.value < 0) inputElement.value = 0;
-		blockLength = inputElement.value;
+		blockLength = parseInt(inputElement.value);
 		updateShape();
 	});
 	blockCountInput?.addEventListener("input", (event) => {
@@ -85,6 +92,19 @@ function setupListeners() {
 		blockLengthInput.value = value;
 		updateShape();
 	});
+	currentBlockWidth?.addEventListener("input", (event) => {
+		let inputElement = event.target;
+		if (inputElement.value < 0) inputElement.value = 0;
+		let scaleOffset = blockWidthInput.value - inputElement.value;
+		scaleOffset = Math.round(1e10 * scaleOffset) / 1e10;
+		if (scaleOffset < 0) {
+			scaleOffset = Math.abs(scaleOffset);
+			scaleDirection.textContent = "Inwards";
+		} else {
+			scaleDirection.textContent = "Outwards";
+		}
+		scaleDirectionLength.textContent = scaleOffset / 2;
+	});
 	document.querySelector("#hide-wireframe")?.addEventListener("input", (event) => {
 		let inputElement = event.target;
 		showWireframe = !inputElement.checked;
@@ -120,18 +140,23 @@ function updateShape() {
 	// let radius = (blockLength / 2) / Math.cos(angleRadians / 2);
 	// let blockWidth = 2 * radius * Math.sin(angleRadians / 2);
 	let blockWidth = blockLength * Math.tan(angleRadians / 2);
-	if (blockWidth + 0.000000000000002 % 1 === 0) blockWidth += 0.000000000000002;
+	blockWidth = Math.round(1e10 * blockWidth) / 1e10;
 	if (roundNumbers) blockWidth = Math.round(100 * blockWidth) / 100;
 	blockWidthInput.value = blockWidth;
 	// blockWidthInput.value = Math.round(100 * (blockWidth + 0.000000000000002)) / 100;
 
 	let height = 1;
 	if (makeItSphere) height = blockWidth / 2;
+	let totalBlockCount = 0;
 
 	for (let sliceIndex = 0; sliceIndex < blockSegments / 2; sliceIndex++) {
 		const group = new THREE.Group();
 
 		for (let segmentIndex = 0; segmentIndex < blockSegments / 2; segmentIndex++) {
+			let totalBlockSize = (blockLength * height * blockWidth) / 4;
+			if (Math.floor(totalBlockSize) !== totalBlockSize) totalBlockSize = Math.floor(totalBlockSize) + 1;
+			// if (totalBlockSize < blockSegments / 2) totalBlockSize = blockSegments / 2;
+			totalBlockCount += totalBlockSize;
 			createRectangle(group, [blockLength/2,height,blockWidth / 2], [0,angleRadians * segmentIndex,0]);
 		}
 
@@ -141,6 +166,17 @@ function updateShape() {
 		if (makeItSphere !== true) break;
 	}
 
+	totalBlocks.textContent = totalBlockCount;
+
+	let scaleOffset = blockWidth - parseInt(currentBlockWidth.value);
+	scaleOffset = Math.round(1e10 * scaleOffset) / 1e10;
+	if (scaleOffset < 0) {
+		scaleOffset = Math.abs(scaleOffset);
+		scaleDirection.textContent = "Inwards";
+	} else {
+		scaleDirection.textContent = "Outwards";
+	}
+	scaleDirectionLength.textContent = scaleOffset / 2;
 }
 
 function createRectangle(group, size = [1,1,1], rotation = [0,0,0], position = [0,0,0]) {
