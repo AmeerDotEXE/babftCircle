@@ -55,7 +55,7 @@ function setupListeners() {
 	blockLengthInput?.addEventListener("input", (event) => {
 		let inputElement = event.target;
 		if (inputElement.value < 0) inputElement.value = 0;
-		blockLength = parseInt(inputElement.value);
+		blockLength = parseFloat(inputElement.value);
 		updateShape();
 	});
 	blockCountInput?.addEventListener("input", (event) => {
@@ -168,7 +168,7 @@ function updateShape() {
 
 	totalBlocks.textContent = totalBlockCount;
 
-	let scaleOffset = blockWidth - parseInt(currentBlockWidth.value);
+	let scaleOffset = blockWidth - parseFloat(currentBlockWidth.value);
 	scaleOffset = Math.round(1e10 * scaleOffset) / 1e10;
 	if (scaleOffset < 0) {
 		scaleOffset = Math.abs(scaleOffset);
