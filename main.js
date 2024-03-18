@@ -19,6 +19,8 @@ let roundNumbers = true;
 
 let blockLength = 10;
 let blockSegments = 12;
+//cone calculator
+let coneHeight = null;
 
 let blockLengthInput = document.querySelector("#block-length");
 let blockCountInput = document.querySelector("#smoothness");
@@ -29,6 +31,9 @@ let totalBlocks = document.querySelector("#total-blocks");
 let currentBlockWidth = document.querySelector("#current-block-width");
 let scaleDirection = document.querySelector("#scale-sides-direction");
 let scaleDirectionLength = document.querySelector("#scale-sides");
+//cone calculator
+let coneHeightInput = document.querySelector("#cone-height");
+let coneAngleInput = document.querySelector("#cone-angle");
 setupListeners();
 
 
@@ -125,6 +130,28 @@ function setupListeners() {
 		roundNumbers = inputElement.checked;
 		updateShape();
 	});
+	
+	coneHeightInput?.addEventListener("input", (event) => {
+		let inputElement = event.target;
+		if (inputElement.value < 0) inputElement.value = 0;
+		coneHeight = parseInt(inputElement.value);
+		updateShape();
+	});
+	coneAngleInput?.addEventListener("input", (event) => {
+		let inputElement = event.target;
+		if (inputElement.value < 0) inputElement.value = 0;
+		console.log("running");
+		// let radius = (blockLength / 2) / Math.cos(angleRadians / 2);
+		// let value = Math.asin(inputElement.value / (2 * radius)) * 2;
+		// let blockWidth = blockLength * Math.tan(angleRadians / 2);
+		let angleDegrees = inputElement.value;
+		let angleRadians = angleDegrees * (Math.PI/180);
+		coneHeight = (blockLength/2) * Math.tan(angleRadians);
+		coneHeight = Math.round(1e10 * coneHeight) / 1e10;
+		if (roundNumbers) coneHeight = Math.round(100 * coneHeight) / 100;
+		coneHeightInput.value = coneHeight;
+		updateShape();
+	});
 }
 
 
@@ -144,6 +171,10 @@ function updateShape() {
 	if (roundNumbers) blockWidth = Math.round(100 * blockWidth) / 100;
 	blockWidthInput.value = blockWidth;
 	// blockWidthInput.value = Math.round(100 * (blockWidth + 0.000000000000002)) / 100;
+	if (coneHeight != null) {
+		coneAngleInput.value = 180 * Math.atan(coneHeight / (blockLength/2)) / Math.PI;
+		if (roundNumbers) coneAngleInput.value = Math.round(100 * coneAngleInput.value) / 100;
+	}
 
 	let height = 1;
 	if (makeItSphere) height = blockWidth / 2;
